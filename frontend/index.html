@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Sharing App</title>
+    <link rel="stylesheet" href="/frontend/css/style.css">
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f4f8;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        header {
+            text-align: center;
+            background-color: #007BFF;
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px 10px 0 0;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .form-section {
+            margin-bottom: 40px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        input, select {
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .success-message {
+            color: green;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 1em;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Daily Expense Sharing Application</h1>
+    </header>
+
+    <!-- Create User Form -->
+    <div class="form-section">
+        <h2>Create User</h2>
+        <form id="create-user-form">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+
+            <label for="mobile">Mobile</label>
+            <input type="text" id="mobile" name="mobile" placeholder="Enter your mobile number" required>
+
+            <button type="submit">Create User</button>
+            <p id="user-message" class="success-message"></p>
+        </form>
+    </div>
+
+    <!-- Add Expense Form -->
+    <div class="form-section">
+        <h2>Add Expense</h2>
+        <form id="add-expense-form">
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" placeholder="Expense description" required>
+
+            <label for="totalAmount">Total Amount</label>
+            <input type="number" id="totalAmount" name="totalAmount" placeholder="Total expense amount" required>
+
+            <label for="participants">Participants (User IDs, comma-separated)</label>
+            <input type="text" id="participants" name="participants" placeholder="Enter User IDs" required>
+
+            <label for="splitMethod">Split Method</label>
+            <select id="splitMethod" name="splitMethod" required>
+                <option value="equal">Equal</option>
+                <option value="exact">Exact</option>
+                <option value="percentage">Percentage</option>
+            </select>
+
+            <button type="submit">Add Expense</button>
+            <p id="expense-message" class="success-message"></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Create User
+    document.getElementById('create-user-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const mobile = document.getElementById('mobile').value;
+
+        try {
+            const response = await fetch('http://localhost:3000/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, mobile })
+            });
+            const data = await response.json();
+            document.getElementById('user-message').textContent = data.message;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+
+    // Add Expense
+    document.getElementById('add-expense-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const description = document.getElementById('description').value;
+        const totalAmount = document.getElementById('totalAmount').value;
+        const participants = document.getElementById('participants').value.split(',').map(id => id.trim());
+        const splitMethod = document.getElementById('splitMethod').value;
+
+        try {
+            const response = await fetch('http://localhost:3000/api/expenses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description, totalAmount, participants, splitMethod })
+            });
+            const data = await response.json();
+            document.getElementById('expense-message').textContent = data.message;
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+</script>
+
+
+</body>
+</html>
